@@ -6,6 +6,7 @@ const router = Router();
 
 // api/user
 router.get('/' , getUsers);
+// recuperer un user par son token
 router.get('/user',verfifyToken, authUser)
 
 // api/user/234
