@@ -14,8 +14,6 @@ export async function getUsers(req: Request , res:Response) {
 export async function getUserById(req: Request<{id: string}> , res: Response<User | {message : string} >) {
     const userId = req.params.id
 
-    console.log(req.params.id);
-
     const user = await UserModel.findById(userId).exec()
     if (!user) {
         return res.status(404).send({ message: 'User not found' });
@@ -73,5 +71,17 @@ export const login = async (req: Request, res: Response<User>) => {
 
     }catch(error) {
         return res.status(500).json({message: "server error"})
+    }
+}
+
+export const authUser = async (req: Request<{}, {}, User>, res: Response) => {
+    try {
+        const user = await UserModel.findOne({email : req.body.email });
+        if(!user){return res.status(404).json({ error : "user not found"})};
+
+        res.status(200).json({fullname: user?.fullname, email: user?.email});
+
+    }catch(error) {
+        res.status(500).json({error: "internal server error"})
     }
 }
