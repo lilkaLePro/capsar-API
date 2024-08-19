@@ -7,9 +7,11 @@ export const verfifyToken = (req: Request, res: Response, next: NextFunction ) =
     if(!token) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
-    jwt.verify(token, 'secret', (error , decoded ) => {
-        if(error) {return res.status(401).json({ error: 'Unauthorized' });}
-        req.user = decoded;
+    jwt.verify(token, 'secret', (error , user ) => {
+        if(error) {return res.status(403).json({ error: 'Unauthorized' });}
+        
+        req.user = user;
+        
         next()
     })
 }
