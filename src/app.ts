@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express'
 import userRouter from './api/user/userRouter'
 import cors from 'cors'
+import profileRouter from './api/profile/profileRouter'
 
 export function createApp() {
     const app = express();
@@ -11,7 +12,8 @@ export function createApp() {
     }))
     app.use(express.json())
 
-    app.use('/api/users' , userRouter);
+    app.use('/api/auth' , userRouter);
+    app.use('/api/profiles', profileRouter)
   
     return app;
 }
