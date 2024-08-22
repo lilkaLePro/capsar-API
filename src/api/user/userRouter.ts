@@ -1,18 +1,18 @@
 import { Router } from "express";
-import { authUser, createUser, getUserById, getUsers, login } from "./userController";
-import { verfifyToken } from "../../midleware/verifyToken";
+import { register } from "./userController";
 
 const router = Router();
 
 // api/user
-router.get('/' , getUsers);
+// router.get('/' , getUsers);
 // recuperer un user par son token
-router.get('/user',verfifyToken, authUser)
+// router.get('/me')
 
 // api/user/234
-router.get('/:id' , getUserById);
+// router.get('/:id' , getUserById);
 
-router.post('/create' , createUser)
-router.post('/connect' , login )
+
+router.post('/create' , register )
+// router.post('/connect', login )
 
 export default router ;

@@ -4,7 +4,7 @@ import { verfifyToken } from "../../midleware/verifyToken";
 
 const router = Router();
 
-router.get('/' , verfifyToken , getProfiles);
+router.get('/' , getProfiles);
 router.get('/:id' , getProfileById)
 
 router.post('/create', createProfile)

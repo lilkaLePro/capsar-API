@@ -7,7 +7,7 @@ interface IProfile extends Document {
     profession : string,
     img_profile: string,
     public_profile: boolean,
-    // user_id: mongoose.Schema.Types.ObjectId
+    user: mongoose.Schema.Types.ObjectId
 }
 
 const ProfileSchema: Schema<IProfile> = new mongoose.Schema({
@@ -16,9 +16,9 @@ const ProfileSchema: Schema<IProfile> = new mongoose.Schema({
     profession: {type: String},
     public_profile: {type: Boolean},
     img_profile: {type: String},
-    // user_id: { type: mongoose.Schema.Types.ObjectId , ref: 'UserModel' }
+    user: { type: mongoose.Types.ObjectId , ref: 'users' }
 }, {
     timestamps: true
 })
 
-export const ProfileModel = mongoose.model<IProfile>('Profile', ProfileSchema)
+export const ProfileModel = mongoose.model<IProfile>('profile', ProfileSchema)

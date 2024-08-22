@@ -12,7 +12,7 @@ export function createApp() {
     }))
     app.use(express.json())
 
-    app.use('/api/users' , userRouter);
+    app.use('/api/auth' , userRouter);
     app.use('/api/profiles', profileRouter)
   
     return app;

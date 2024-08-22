@@ -2,7 +2,8 @@ import { Response } from "express"
 import { Request } from "express-serve-static-core"
 import { ProfileModel } from "./profileModel"
 import { Profile, ProfileObjectDt } from "./createProfileDataTO"
-import { UserModel } from "../user/userModel"
+import mongoose from "mongoose"
+import { User } from "../user/createUserDataTO"
 
 export const getProfiles = async (req: Request, res: Response) => {
     const profiles = await ProfileModel.find()
@@ -17,21 +18,22 @@ export const getProfileById = (req:Request<{id : string}>, res:Response<Profile 
 
     res.status(200).send()
 }
-    
 
-export const createProfile = async (req:Request<{}, {}, ProfileObjectDt >, 
-    res: Response<Profile | { message : string }>) => 
+interface authUser extends User { _id: mongoose.Types.ObjectId }
+export const createProfile = async (req:Request<{}, {}, ProfileObjectDt>, 
+    res: Response<Profile>) => 
 {
-    try{
-        const { biographie, pays, profession, public_profile, img_profile,  } = req.body
+        const { biographie, pays } = req.body
+        const userId = (req.user as authUser)._id
+
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            console.log("not valid objectId");
+        }   
+
     
-        const newProfile = new ProfileModel({ biographie, pays, profession, public_profile, img_profile })
+        const newProfile = new ProfileModel({ biographie, pays, user: userId })
         await newProfile.save()
         
-        res.status(201).send({message: "user creer"})
+        res.status(201).json({biographie, pays}).send(newProfile)
 
- }catch(error) {
-    console.error(error);
-    res.status(500).send({ message: "Internal Server Error" });
- }
 }
