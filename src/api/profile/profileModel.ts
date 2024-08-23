@@ -3,7 +3,9 @@ import mongoose, {Document, Mongoose, Schema} from "mongoose";
 interface IProfile extends Document {
     _id  : string | undefined,
     biographie : string ,
-    pays : string , ville : string ,
+    adress: {
+        pays : string , ville : string ,
+    },
     profession : string,
     img_profile: string,
     public_profile: boolean,
@@ -12,7 +14,9 @@ interface IProfile extends Document {
 
 const ProfileSchema: Schema<IProfile> = new mongoose.Schema({
     biographie: { type: String},
-    pays: {type: String},
+    adress: {
+        pays: {type: String}, ville: {type: String},
+    },
     profession: {type: String},
     public_profile: {type: Boolean},
     img_profile: {type: String},
@@ -22,3 +26,8 @@ const ProfileSchema: Schema<IProfile> = new mongoose.Schema({
 })
 
 export const ProfileModel = mongoose.model<IProfile>('profile', ProfileSchema)
+
+export const createProfile = (value: Record<string, any>) => new ProfileModel(value)
+        .save().then((user) => user.toObject());
+
+export const getProfiles = () => ProfileModel.find();
