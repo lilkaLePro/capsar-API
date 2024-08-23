@@ -51,10 +51,12 @@ export const register = async (req: Request, res: Response) => {
         const { email, fullname, password, userType } = req.body;
 
         if(!email || !password || !fullname) {
-            return res.sendStatus(400)
+            return res.status(400)
         }
         const existingUser = await getUserByEmail(email)
-        if(existingUser) res.sendStatus(400).json({msg: "user exist deja"})
+        if(existingUser) {
+            return res.status(400).json({msg: "user exist deja"})
+        } 
 
         const salt = random()
         const user = await createUser({
@@ -66,7 +68,12 @@ export const register = async (req: Request, res: Response) => {
                 password: authentication(salt, password)
             },
         });
+        const id = user?._id as mongoose.Types.ObjectId
+        const sessionToken = authentication( salt, id.toString() );
+        let userToken = user.authentication as Authentication;
+        userToken.sessionToken = sessionToken;
         
+        res.cookie(key, sessionToken, { domain: 'localhost', path: '/' })
         return res.status(200).json(user)
         
     }catch(error) {
