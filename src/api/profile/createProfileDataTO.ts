@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 export interface ProfileObjectDt {
+    _id: string ,
     biographie : string ,
     pays : string , ville : string ,
     profession : string,
@@ -9,12 +10,12 @@ export interface ProfileObjectDt {
 }
 
 export interface Profile {
-    id: string,
-    biographie : string ,
-    pays : string , ville : string ,
-    profession : string,
-    img_profile: string,
-    public_profile: boolean,
+    id?: string,
+    biographie ?: string ,
+    pays ?: string , ville ?: string ,
+    profession ?: string,
+    img_profile?: string,
+    public_profile?: boolean,
     // user_id: mongoose.Types.ObjectId,
     message ?: string
 }
