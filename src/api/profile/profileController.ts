@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
-import { createProfile, getProfiles } from "./profileModel";
+import { createProfile, getProfileId, getProfiles, ProfileModel } from "./profileModel";
+import { ObjectId } from "mongoose";
+import { UserModel } from "../user/userModel";
 
 export const getAllProfile = async (req: Request, res: Response) => {
     try{
@@ -8,6 +10,30 @@ export const getAllProfile = async (req: Request, res: Response) => {
     }catch(error) {
         console.log(error);
         
+    }
+}
+export const getProfileById =  async (req: Request, res: Response) => {
+    try{
+        const { id } = req.params
+        if(!id) { return res.status(400).json({ msg: "user id missing" }) }
+
+        const user = await getProfileId(id)
+        return res.status(200).json({ msg: "this user is :", user })
+    }catch(error) {
+        console.log(error);
+        return res.sendStatus(500)
+    }
+}
+export const getProfileByUser = async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.params
+
+        const profile = await ProfileModel.find({ user: userId })
+
+        return res.status(404).json({ msg: "the profile of this user", profile })
+    }catch(error) {
+        console.log(error);
+        return res.sendStatus(500)
     }
 }
 

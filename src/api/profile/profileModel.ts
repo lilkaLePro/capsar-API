@@ -31,3 +31,5 @@ export const createProfile = (value: Record<string, any>) => new ProfileModel(va
         .save().then((user) => user.toObject());
 
 export const getProfiles = () => ProfileModel.find();
+export const getProfileId = (id: string) => ProfileModel.findById(id)
+export const getUserProfile = (user: mongoose.Types.ObjectId ) => ProfileModel.findOne({ user })

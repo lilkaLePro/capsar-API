@@ -9,14 +9,15 @@ const key = process.env.SECRET || 'SECRETE-KEY' ;
 export const isAuth = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const sessionToken = req.cookies['SECRETE-KEY'];
-        if(!sessionToken) res.sendStatus(403);
+        if(!sessionToken) { return res.sendStatus(403) };
 
         const existingUser = await getUserBySessionToken(sessionToken);
-        if(!existingUser) res.sendStatus(403).json({msg: "user doesn't exist"});
-
+        if(!existingUser) { return res.sendStatus(403).json({msg: "user doesn't exist"}) } ;
+ 
         merge(req, {identity: existingUser});
 
-        return next()
+        return res.status(200).json(existingUser)
+        next()
 
     }catch(error) {
         console.log(error);

@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
-import { createUser, deleteUserById, getUserByEmail, getUsers } from './userModel';
+import { createUser, deleteUserById, getUserByEmail, getUserBySessionToken, getUsers } from './userModel';
 import { authentication, random } from '../../helpers';
 import mongoose from 'mongoose';
-const key = process.env.SECRET || 'SECRETE-KEY' ;
+const key = process.env.SECRETE || "SECRETE-KEY" ;
 
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
@@ -15,6 +15,16 @@ export const getAllUsers = async (req: Request, res: Response) => {
         return res.sendStatus(400)
     }
 }
+
+export const getUserByToken = async (req: Request, res: Response) => {
+    let token = req.cookies[key]
+    if(!token) { return res.status(400).json({ msg: "token not found" }) }
+
+    const user = await getUserBySessionToken(token)
+    if(!user) { return res.status(400).json({msg: "token non disponible"}) }
+
+    return res.status(200).json(user)
+};
 
 interface Authentication { salt: string, password: string, sessionToken: string }
 export const login = async (req: Request, res: Response) => {
@@ -35,7 +45,7 @@ export const login = async (req: Request, res: Response) => {
         authenticationData.sessionToken = authentication(salt, id.toString())
 
         await user?.save()
-        res.cookie(key, authenticationData.sessionToken, { domain : 'localhost', path: '/' } )
+        res.cookie(key, authenticationData.sessionToken, { domain : 'localhost', path: '/', secure: false } )
 
         return res.status(200).json({ msg: "connexion reusite", user }).end();
 
