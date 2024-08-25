@@ -2,6 +2,7 @@ import {get, merge} from 'lodash'
 
 import { getUserBySessionToken } from '../api/user/userModel'
 import { NextFunction, Request, Response } from 'express'
+import multer from 'multer';
 
 const key = process.env.SECRET || 'SECRETE-KEY' ;
 
@@ -43,3 +44,11 @@ export const isOwner = async (req: IdTypes, res: Response, next: NextFunction) =
     }
 }   
 
+export const storage = multer.diskStorage({
+    destination: (req, file, cb ) => {
+        cb(null, 'public/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`)
+    }
+})

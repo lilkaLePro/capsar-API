@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { createProfile, getProfileId, getProfiles, ProfileModel, updateProfile } from "./profileModel";
+import mongoose from "mongoose";
 
 export const getAllProfile = async (req: Request, res: Response) => {
     try{
@@ -26,7 +27,7 @@ export const getProfileByUser = async (req: Request, res: Response) => {
     try {
         const { userId } = req.params
 
-        const profile = await ProfileModel.findOne({ user: userId })
+        const profile = await ProfileModel.findOne({ user: new mongoose.Types.ObjectId(userId) })
 
         return res.status(200).json({ msg: "the profile of this user", profile })
     }catch(error) {
@@ -43,7 +44,6 @@ export const addProfile = async (req: Request, res: Response) => {
         const profile = await createProfile({
             username,
             biographie,
-            img_profile,
             user,
             adress: {
                 pays,
@@ -66,7 +66,8 @@ export const updateUserProfile = async (req: Request, res: Response) => {
 
         const user = await getProfileId(id);
         if(!user) { return res.status(400).json({ msg: "user not found" }) }
-         user.biographie = biographie;
+            user.biographie = biographie
+            user.img_profile = `${req.file?.filename}`
 
         user.save()
 

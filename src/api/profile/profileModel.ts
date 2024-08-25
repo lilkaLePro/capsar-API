@@ -19,7 +19,7 @@ const ProfileSchema: Schema<IProfile> = new mongoose.Schema({
     username: { type: String},
     profession: {type: String},
     public_profile: {type: Boolean},
-    img_profile: {type: String},
+    img_profile: {type: String },
     user: { type: mongoose.Types.ObjectId , ref: 'users' },
     adress: {
         pays: {type: String}, ville: {type: String},
