@@ -1,18 +1,18 @@
 import { Router } from "express";
-import { register } from "./userController";
+import { deleteuser, getAllUsers, getUserByToken, login, register } from "./userController";
+import { isAuth, isOwner } from "../../midleware";
 
 const router = Router();
 
 // api/user
-// router.get('/' , getUsers);
-// recuperer un user par son token
-// router.get('/me')
+router.get('/users', getAllUsers);
+// // recuperer un user par son token
+router.get('/me', isAuth, getUserByToken )
 
-// api/user/234
-// router.get('/:id' , getUserById);
+// // api/user/234
+// router.delete('/delete/:id' , deleteuser );
 
-
-router.post('/create' , register )
+// router.post('/create' , register )
 // router.post('/connect', login )
 
 export default router ;

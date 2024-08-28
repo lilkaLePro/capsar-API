@@ -1,39 +1,80 @@
-import { Response } from "express"
-import { Request } from "express-serve-static-core"
-import { ProfileModel } from "./profileModel"
-import { Profile, ProfileObjectDt } from "./createProfileDataTO"
-import mongoose from "mongoose"
-import { User } from "../user/createUserDataTO"
+import { Request, Response } from "express";
+import { createProfile, getProfileId, getProfiles, ProfileModel, updateProfile } from "./profileModel";
+import mongoose from "mongoose";
 
-export const getProfiles = async (req: Request, res: Response) => {
-    const profiles = await ProfileModel.find()
-
-    res.status(200).send(profiles)
-}
-export const getProfileById = (req:Request<{id : string}>, res:Response<Profile | {message : string}>) => {
-    const profileId = req.params.id;
-
-    const profile = ProfileModel.findById(profileId).exec();
-    if(!profile){return res.status(400).send({message : "profile not fount"})}
-
-    res.status(200).send()
-}
-
-interface authUser extends User { _id: mongoose.Types.ObjectId }
-export const createProfile = async (req:Request<{}, {}, ProfileObjectDt>, 
-    res: Response<Profile>) => 
-{
-        const { biographie, pays } = req.body
-        const userId = (req.user as authUser)._id
-
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            console.log("not valid objectId");
-        }   
-
-    
-        const newProfile = new ProfileModel({ biographie, pays, user: userId })
-        await newProfile.save()
+export const getAllProfile = async (req: Request, res: Response) => {
+    try{
+        const profiles = await getProfiles()
+        return res.status(200).json({ msg: "tous les profiles : ", profiles })
+    }catch(error) {
+        console.log(error);
         
-        res.status(201).json({biographie, pays}).send(newProfile)
-
+    }
 }
+export const getProfileById =  async (req: Request, res: Response) => {
+    try{
+        const { id } = req.params
+        if(!id) { return res.status(400).json({ msg: "user id missing" }) }
+
+        const user = await getProfileId(id)
+        return res.status(200).json({ msg: "this user is :", user })
+    }catch(error) {
+        console.log(error);
+        return res.sendStatus(500)
+    }
+}
+export const getProfileByUser = async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.params
+
+        const profile = await ProfileModel.findOne({ user: new mongoose.Types.ObjectId(userId) })
+
+        return res.status(200).json({ msg: "the profile of this user", profile })
+    }catch(error) {
+        console.log(error);
+        return res.sendStatus(500)
+    }
+}
+
+export const addProfile = async (req: Request, res: Response) => {
+    try {
+        const { biographie, img_profile, user, pays, ville, username } = req.body;
+        
+        if(!user) { return res.sendStatus(400) }
+        const profile = await createProfile({
+            username,
+            biographie,
+            user,
+            adress: {
+                pays,
+                ville
+            }
+        })
+        return res.status(200).json({msg: 'profile crée', profile})
+
+    }catch(error) {
+        console.log(error);
+        return res.sendStatus(500)
+    }
+}
+
+export const updateUserProfile = async (req: Request, res: Response) => {
+    try{
+        const { id } = req.params;
+        const { biographie } = req.body;
+        if(!biographie) { return res.status(400).json({ msg: "biographie non dispo" }) }
+
+        const user = await getProfileId(id);
+        if(!user) { return res.status(400).json({ msg: "user not found" }) }
+            user.biographie = biographie
+            user.img_profile = `${req}`
+
+        user.save()
+
+        return res.status(200).json({ msg: 'profile modifié', user })
+    }catch(error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+}
+

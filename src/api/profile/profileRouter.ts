@@ -1,12 +1,22 @@
 import { Router } from "express";
-import { createProfile, getProfileById, getProfiles } from "./profileController";
-import { verfifyToken } from "../../midleware/verifyToken";
+import { addProfile, getAllProfile, 
+    getProfileById, getProfileByUser, 
+    updateUserProfile } 
+from "./profileController";
+import multer from "multer";
+import { storage } from "../../midleware/index"; 
+
 
 const router = Router();
 
-router.get('/' , getProfiles);
-router.get('/:id' , getProfileById)
+// router.get('/' , getAllProfile);
+// router.get('/:id', getProfileById );
+// router.get('/user/:userId', getProfileByUser );
 
-router.post('/create', createProfile)
+// const upload = multer({storage})
+
+// router.post('/create', upload.single('img_profile') , addProfile);
+// router.put('/update/:id', updateUserProfile);
+
 
 export default router;

@@ -1,13 +1,26 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const UserSchema: Schema = new mongoose.Schema({
+interface IUser {
+    _id?: string,
+    fullname: string,
+    email: string,
+    authentication: {
+        password: string,
+        salt: string,
+        sessionToken: string
+    },
+    userType: "user" | 'admin'
+}
+
+const UserSchema: Schema = new mongoose.Schema<IUser>({
     fullname : {type : String , required : true, min : 2 , max : 30 },
     email : {type : String , required : true , unique : true },
+    userType: {type: String, required: true} ,
     authentication: {
         password : { type : String , required : true, select: false},
         salt: {type: String, select: false },
         sessionToken: {type: String, select: false }
-}
+},
 }, {
     timestamps: true
 })
@@ -24,6 +37,6 @@ export const getUserById = (id: string) => UserModel.findById(id);
 
 export const createUser = (value: Record<string, any>) => new UserModel(value)
     .save().then((user) => user.toObject());
-    
+
 export const deleteUserById = (id: string) => UserModel.findOneAndDelete({ _id: id });
 export const updateUserById = (id: string, value: Record<string, any>) => UserModel.findByIdAndUpdate(id, value);
