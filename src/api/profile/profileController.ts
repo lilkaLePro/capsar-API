@@ -67,7 +67,7 @@ export const updateUserProfile = async (req: Request, res: Response) => {
         const user = await getProfileId(id);
         if(!user) { return res.status(400).json({ msg: "user not found" }) }
             user.biographie = biographie
-            user.img_profile = `${req.file?.filename}`
+            user.img_profile = `${req}`
 
         user.save()
 

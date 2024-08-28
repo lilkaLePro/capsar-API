@@ -2,13 +2,14 @@ import express, { Request, Response } from 'express';
 import { createUser, deleteUserById, getUserByEmail, getUserBySessionToken, getUsers } from './userModel';
 import { authentication, random } from '../../helpers';
 import mongoose from 'mongoose';
+import pgconexion from '../../config/db';
 const key = process.env.SECRETE || "SECRETE-KEY" ;
 
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
-        const users = await getUsers();
+        const users = await pgconexion.query(' SELECT * FROM users ');
 
-        return res.status(200).json(users);
+        res.json(users.rows);
 
     }catch(error) {
         console.log(error);
