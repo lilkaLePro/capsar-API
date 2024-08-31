@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { createUser, deleteUserById, getUserByEmail, getUserBySessionToken, getUsers } from './userModel';
 import { authentication, random } from '../../helpers';
 import mongoose from 'mongoose';
+import { createProfile, ProfileModel } from '../profile/profileModel';
 const key = process.env.SECRETE || "SECRETE-KEY" ;
 
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -17,13 +18,17 @@ export const getAllUsers = async (req: Request, res: Response) => {
 }
 
 export const getUserByToken = async (req: Request, res: Response) => {
-    let token = req.cookies[key]
-    if(!token) { return res.status(400).json({ msg: "token not found" }) }
+   try{
+        let token = req.cookies[key]
+        if(!token) { res.sendStatus(400).json({ msg: "token not found" }) }
 
-    const user = await getUserBySessionToken(token)
-    if(!user) { return res.status(400).json({msg: "token non disponible"}) }
+        const user = await getUserBySessionToken(token)
+        if(!user) { res.sendStatus(400).json({msg: "token non disponible"}) }
 
-    return res.status(200).json(user)
+        return user
+   }catch(error) {
+        return res.status(500).json(' server error ')
+   }
 };
 
 interface Authentication { salt: string, password: string, sessionToken: string }
@@ -58,7 +63,8 @@ export const login = async (req: Request, res: Response) => {
 
 export const register = async (req: Request, res: Response) => {
     try{
-        const { email, fullname, password, userType } = req.body;
+        const { email, fullname, password, 
+            userType, img_profile } = req.body;
 
         if(!email || !password || !fullname) {
             return res.status(400)
@@ -78,13 +84,25 @@ export const register = async (req: Request, res: Response) => {
                 password: authentication(salt, password)
             },
         });
+        
         const id = user?._id as mongoose.Types.ObjectId
+
+        const profile = await createProfile({
+            username: fullname.replace(' ', '_'),
+            biographie: "",
+            user: user,
+            adress: {
+                pays:"",
+                ville:""
+            }
+        })
+        
         const sessionToken = authentication( salt, id.toString() );
         let userToken = user.authentication as Authentication;
         userToken.sessionToken = sessionToken;
-        
+
         res.cookie(key, sessionToken, { domain: 'localhost', path: '/' })
-        return res.status(200).json(user)
+        return res.status(200).json({ msg: "user and profile created", user, profile })
         
     }catch(error) {
         console.log(error);

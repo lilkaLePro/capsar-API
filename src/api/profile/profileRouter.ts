@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addProfile, getAllProfile, 
+import { getAllProfile, 
     getProfileById, getProfileByUser, 
     updateUserProfile } 
 from "./profileController";
@@ -14,7 +14,6 @@ router.get('/user/:userId', getProfileByUser );
 
 const upload = multer({storage})
 
-router.post('/create', upload.single('img_profile') , addProfile);
 router.put('/update/:id', updateUserProfile);
 
 

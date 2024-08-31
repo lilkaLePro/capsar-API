@@ -1,11 +1,15 @@
 import { Request, Response } from "express";
 import { createProfile, getProfileId, getProfiles, ProfileModel, updateProfile } from "./profileModel";
 import mongoose from "mongoose";
+import { getUserByToken, register } from "../user/userController";
+import { getUserBySessionToken, UserModel } from "../user/userModel";
+const key = process.env.SECRETE || "SECRETE-KEY" ;
+
 
 export const getAllProfile = async (req: Request, res: Response) => {
     try{
-        const profiles = await getProfiles()
-        return res.status(200).json({ msg: "tous les profiles : ", profiles })
+        const profiles = await getProfiles();
+        return res.status(200).json({ msg: "tous les profiles : ", profiles})
     }catch(error) {
         console.log(error);
         
@@ -36,40 +40,16 @@ export const getProfileByUser = async (req: Request, res: Response) => {
     }
 }
 
-export const addProfile = async (req: Request, res: Response) => {
-    try {
-        const { biographie, img_profile, user, pays, ville, username } = req.body;
-        
-        if(!user) { return res.sendStatus(400) }
-        const profile = await createProfile({
-            username,
-            biographie,
-            user,
-            adress: {
-                pays,
-                ville
-            }
-        })
-        return res.status(200).json({msg: 'profile crée', profile})
-
-    }catch(error) {
-        console.log(error);
-        return res.sendStatus(500)
-    }
-}
-
 export const updateUserProfile = async (req: Request, res: Response) => {
+    let token = req.cookies[key]
     try{
-        const { id } = req.params;
-        const { biographie } = req.body;
-        if(!biographie) { return res.status(400).json({ msg: "biographie non dispo" }) }
 
-        const user = await getProfileId(id);
+        const user = await getUserBySessionToken(token)
         if(!user) { return res.status(400).json({ msg: "user not found" }) }
-            user.biographie = biographie
-            user.img_profile = `${req.file?.filename}`
+            // user.biographie = biographie
+            // user.img_profile = `${req.}`
 
-        user.save()
+        // user.save()
 
         return res.status(200).json({ msg: 'profile modifié', user })
     }catch(error) {
