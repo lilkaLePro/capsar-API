@@ -1,15 +1,14 @@
 import mongoose, {Document, Mongoose, Schema} from "mongoose";
 import { UserModel } from "../user/userModel";
 
-interface IProfile extends Document {
+export interface IProfile extends Document {
     _id  : string | undefined,
     biographie : string ,
     adress: {
         pays : string , ville : string ,
     },
-    profession : string,
+    proffession : string,
     img_profile: string,
-    public_profile: boolean,
     user: mongoose.Schema.Types.ObjectId,
     username: string
 }
@@ -17,8 +16,7 @@ interface IProfile extends Document {
 const ProfileSchema: Schema<IProfile> = new mongoose.Schema({
     biographie: { type: String},
     username: { type: String},
-    profession: {type: String},
-    public_profile: {type: Boolean},
+    proffession: {type: String},
     img_profile: {type: String },
     user: { type: mongoose.Types.ObjectId , ref: 'users' },
     adress: {

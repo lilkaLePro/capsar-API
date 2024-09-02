@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createProfile, getProfileId, getProfiles, ProfileModel, updateProfile } from "./profileModel";
+import { createProfile, getProfileId, getProfiles, IProfile, ProfileModel, updateProfile } from "./profileModel";
 import mongoose from "mongoose";
 import { getUserByToken, register } from "../user/userController";
 import { getUserBySessionToken, UserModel } from "../user/userModel";
@@ -40,18 +40,32 @@ export const getProfileByUser = async (req: Request, res: Response) => {
     }
 }
 
-export const updateUserProfile = async (req: Request, res: Response) => {
-    let token = req.cookies[key]
+export const updateUserProfile = async (req: Request<{id: string},{}>, res: Response) => {
+    const { id } = req.params;
     try{
+        const {proffession, biographie, pays, ville, username} = req.body
 
-        const user = await getUserBySessionToken(token)
-        if(!user) { return res.status(400).json({ msg: "user not found" }) }
-            // user.biographie = biographie
-            // user.img_profile = `${req.}`
+        // const profileOBJ: Partial<IProfile> = {
+        //     username: username,
+        //     proffession: proffession,
+        //     biographie: biographie,
+        //    adress : {
+        //     pays: pays,
+        //     ville: ville
+        //    }
+        // };
+        const profile = await ProfileModel.findByIdAndUpdate(id);
+        if(!profile) { return res.status(400).json('profile dosen t exist') };
+            profile.username = username,
+            profile.biographie = biographie,
+            profile.proffession = proffession,
+            profile.adress.ville = ville,
+            profile.adress.pays = pays
+            profile.save()
 
-        // user.save()
 
-        return res.status(200).json({ msg: 'profile modifié', user })
+        return res.status(200).json({ msg: 'profile modifié', profile });
+
     }catch(error) {
         console.log(error);
         return res.sendStatus(500);

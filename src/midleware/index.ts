@@ -13,7 +13,7 @@ export const isAuth = async (req: Request, res: Response, next: NextFunction) =>
         if(!sessionToken) { return res.sendStatus(403) };
 
         const existingUser = await getUserBySessionToken(sessionToken);
-        if(!existingUser) { return res.sendStatus(403).json({msg: "user doesn't exist"}) } ;
+        if(!existingUser) { return res.sendStatus(403) } ;
  
         merge(req, {identity: existingUser});
 
