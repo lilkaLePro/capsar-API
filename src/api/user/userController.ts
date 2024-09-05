@@ -64,7 +64,7 @@ export const login = async (req: Request, res: Response) => {
 export const register = async (req: Request, res: Response) => {
     try{
         const { email, fullname, password, 
-            userType, img_profile } = req.body;
+            userType } = req.body;
 
         if(!email || !password || !fullname) {
             return res.status(400)
@@ -91,6 +91,7 @@ export const register = async (req: Request, res: Response) => {
             username: fullname.replace(' ', '_'),
             biographie: "",
             user: user,
+            profession: "",
             adress: {
                 pays:"",
                 ville:""

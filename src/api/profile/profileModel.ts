@@ -1,7 +1,7 @@
 import mongoose, {Document, Mongoose, Schema} from "mongoose";
 import { UserModel } from "../user/userModel";
 
-export interface IProfile extends Document {
+interface IProfile extends Document {
     _id  : string | undefined,
     biographie : string ,
     adress: {
@@ -14,13 +14,13 @@ export interface IProfile extends Document {
 }
 
 const ProfileSchema: Schema<IProfile> = new mongoose.Schema({
-    biographie: { type: String},
-    username: { type: String},
-    proffession: {type: String},
-    img_profile: {type: String },
-    user: { type: mongoose.Types.ObjectId , ref: 'users' },
+    biographie: { type: String, required: true },
+    username: { type: String, required: true },
+    proffession: {type: String, required: true },
+    img_profile: {type: String},
+    user: { type: mongoose.Types.ObjectId , ref: 'users', required: true },
     adress: {
-        pays: {type: String}, ville: {type: String},
+        pays: {type: String, required: true}, ville: {type: String, required: true},
     },
 }, {
     timestamps: true

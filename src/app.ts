@@ -2,10 +2,11 @@ import express, { Request, Response } from 'express'
 import userRouter from './api/user/userRouter'
 import cors from 'cors'
 import profileRouter from './api/profile/profileRouter'
+import projectRoute from './api/projet/projectRoute'
 import 'dotenv/config'
 import cookieParser from 'cookie-parser'
 import session from 'express-session'
-// import helmet from 'helmet'
+import path from 'path'
 
 export function createApp() {
 const app = express();
@@ -16,18 +17,19 @@ const app = express();
         saveUninitialized: false,
         cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 }
     }));
-    app.use(cookieParser());
     app.use(cors({
         origin : "http://localhost:3000",
         methods : ["GET","POST","PUT","DELETE"],
         credentials : true
     }));
     app.use(express.json());
+    app.use(express.static(path.join(__dirname, "public")))
     // app.use(helmet());
     // app.disable('x-powered-by');
     
     app.use('/api/auth' , userRouter);
     app.use('/api/profiles', profileRouter);
+    app.use('/api/project', projectRoute);
   
     return app;
 }

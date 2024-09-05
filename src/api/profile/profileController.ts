@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import { createProfile, getProfileId, getProfiles, IProfile, ProfileModel, updateProfile } from "./profileModel";
+import { getProfileId, getProfiles, ProfileModel, updateProfile } from "./profileModel";
 import mongoose from "mongoose";
-import { getUserByToken, register } from "../user/userController";
-import { getUserBySessionToken, UserModel } from "../user/userModel";
 const key = process.env.SECRETE || "SECRETE-KEY" ;
 
 
@@ -31,7 +29,9 @@ export const getProfileByUser = async (req: Request, res: Response) => {
     try {
         const { userId } = req.params
 
-        const profile = await ProfileModel.findOne({ user: new mongoose.Types.ObjectId(userId) })
+        const profile = await ProfileModel.findOne({ user: new mongoose.Types.ObjectId(userId) }).populate({
+            path: 'user', select: "fullname"
+        })
 
         return res.status(200).json({ msg: "the profile of this user", profile })
     }catch(error) {
@@ -45,26 +45,20 @@ export const updateUserProfile = async (req: Request<{id: string},{}>, res: Resp
     try{
         const {proffession, biographie, pays, ville, username} = req.body
 
-        // const profileOBJ: Partial<IProfile> = {
-        //     username: username,
-        //     proffession: proffession,
-        //     biographie: biographie,
-        //    adress : {
-        //     pays: pays,
-        //     ville: ville
-        //    }
-        // };
         const profile = await ProfileModel.findByIdAndUpdate(id);
         if(!profile) { return res.status(400).json('profile dosen t exist') };
             profile.username = username,
             profile.biographie = biographie,
             profile.proffession = proffession,
             profile.adress.ville = ville,
-            profile.adress.pays = pays
-            profile.save()
+            profile.adress.pays = pays;
+            if(!req.file) return res.sendStatus(400);
+            profile.img_profile = req.file.filename;
+            
+            const data = await profile.save()
 
 
-        return res.status(200).json({ msg: 'profile modifié', profile });
+        return res.status(200).json({ msg: 'profile modifié', data });
 
     }catch(error) {
         console.log(error);

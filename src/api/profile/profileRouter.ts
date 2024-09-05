@@ -12,9 +12,9 @@ router.get('/' , getAllProfile);
 router.get('/:id', getProfileById );
 router.get('/user/:userId', getProfileByUser );
 
-const upload = multer({storage})
+const upload = multer({storage: storage})
 
-router.put('/update/:id', updateUserProfile);
+router.put('/update/:id', upload.single('img_profile') , updateUserProfile);
 
 
 export default router;
