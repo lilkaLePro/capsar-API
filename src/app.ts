@@ -29,7 +29,7 @@ const app = express();
     
     app.use('/api/auth' , userRouter);
     app.use('/api/profiles', profileRouter);
-    app.use('/api/project', projectRoute);
+    app.use('/api/projects', projectRoute);
   
     return app;
 }

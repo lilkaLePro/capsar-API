@@ -16,10 +16,13 @@ const ProjectSchema: Schema<IProject> = new mongoose.Schema({
     link: { type: String, required: true },
     projectName: { type: String, required: true },
     validation: { type: String, required: true },
-    amountObjectif: { type: Number, required: true }
+    amountObjectif: { type: Number, required: true },
+    description: { type: String, required: true }
 });
 
-export const ProjectModel = mongoose.model<IProject>('project', ProjectSchema)
+export const ProjectModel = mongoose.model<IProject>('projects', ProjectSchema)
 
 export const createProject = (value: Record<string, any>) => new ProjectModel(value)
     .save().then(project => project.toObject());
+
+export const getAllProject = () => ProjectModel.find();
