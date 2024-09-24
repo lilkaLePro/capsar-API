@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { deleteuser, getAllUsers, getUserByToken, login, register } from "./userController";
-import { isAuth, isOwner } from "../../midleware";
+import { deleteuser, getAllUsers, getUserByToken, register } from "./userController";
+import { isAuth } from "../../midleware";
 
 const router = Router();
 
@@ -13,6 +13,6 @@ router.get('/me', isAuth, getUserByToken )
 router.delete('/delete/:id' , deleteuser );
 
 router.post('/create' , register )
-router.post('/connect', login )
+router.post('/connect' )
 
 export default router ;

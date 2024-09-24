@@ -1,15 +1,13 @@
 import express, { Request, Response } from 'express'
 import userRouter from './api/user/userRouter'
 import cors from 'cors'
-import profileRouter from './api/profile/profileRouter'
-import projectRoute from './api/projet/projectRoute'
 import 'dotenv/config'
 import cookieParser from 'cookie-parser'
 import session from 'express-session'
 import path from 'path'
 
 export function createApp() {
-const app = express();
+const app = express();  
     app.use(cookieParser());
     app.use(session({
         secret: process.env.SECRETE || 'SECRETE-KEY',
@@ -28,8 +26,6 @@ const app = express();
     // app.disable('x-powered-by');
     
     app.use('/api/auth' , userRouter);
-    app.use('/api/profiles', profileRouter);
-    app.use('/api/projects', projectRoute);
   
     return app;
 }
